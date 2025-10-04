@@ -1,0 +1,107 @@
+/* src/index.css — Tailwind v4 */
+@import "tailwindcss";
+
+/* 🎨 Design tokens (utilisables via text-burgundy, bg-cream, etc.) */
+@theme {
+  --color-burgundy: #3b0d17;
+  --color-cream: #f6eddc;
+  --color-gold: #caa65a;
+  --color-dark: #111111;
+
+  --font-sans: "Inter", system-ui, -apple-system, Segoe UI, Roboto,
+               "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji",
+               "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+  --font-display: "Playfair Display", serif;
+
+  --shadow-card: 0 8px 30px rgba(0,0,0,.08);
+  --radius-2xl: 1rem;
+}
+
+/* Fond léger, chaleureux */
+body {
+  background-image: radial-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 16px 16px;
+  font-family: var(--font-sans);
+  color: var(--color-dark);
+  margin: auto;
+}
+
+/* Titre de section (si tu l’utilises dans tes composants) */
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.2rem + 1.5vw, 2.25rem);
+  letter-spacing: .02em;
+  color: var(--color-burgundy);
+}
+
+/* Composants utilitaires SANS @apply (compatibles v4) */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--color-burgundy);
+  color: var(--color-cream);
+  padding: 0.75rem 1.5rem; /* px-6 py-3 */
+  font-weight: 600;
+  transition: opacity .2s ease;
+}
+.btn-primary:hover { opacity: .9; }
+.btn-primary--alt { background: var(--color-gold); color: var(--color-dark); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklab, var(--color-burgundy), transparent 70%);
+  background: white;
+  color: var(--color-burgundy);
+  padding: .25rem .75rem; /* px-3 py-1 */
+  font-size: .875rem;     /* text-sm */
+}
+
+.card {
+  border-radius: var(--radius-2xl);
+  background: white;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgb(0 0 0 / 5%);
+}
+
+.container {
+  padding-inline: clamp(1rem, 4vw, 2rem); /* + marge latérale sur mobile/desktop */
+}
+@media (min-width: 1280px) {
+  .container { padding-inline: 2.5rem; }
+}
+
+/* Barre des catégories — à appliquer sur le conteneur des boutons */
+.menu-cats {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+/* Style par défaut des onglets (plus grands) */
+.menu-cats .badge {
+  height: 44px;                 /* confortable au doigt */
+  padding: 0 .95rem;            /* > taille */
+  font-size: 1rem;              /* lisible */
+  font-weight: 600;
+  border-width: 2px;
+  border-color: color-mix(in oklab, var(--color-burgundy), transparent 45%);
+  background: white;
+  box-shadow: var(--shadow-card);
+  transition: transform .06s ease, background-color .15s ease;
+}
+.menu-cats .badge:active { transform: scale(.98); }
+
+/* État actif (onglet sélectionné) */
+.menu-cats .badge.is-active {
+  background: var(--color-burgundy);
+  color: var(--color-cream);
+  border-color: var(--color-burgundy);
+}
+
