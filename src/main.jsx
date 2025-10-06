@@ -8,6 +8,8 @@ import Menu from "./pages/Menu.jsx";
 import About from "./pages/About.jsx";
 import Contact from "./pages/Contact.jsx";
 import Legal from "./pages/Legal.jsx";
+import AdminLogin from "./pages/AdminLogin.jsx";
+import Admin from "./pages/Admin.jsx";
 
 
 const router = createBrowserRouter([
@@ -20,6 +22,8 @@ children: [
 { path: "a-propos", element: <About /> },
 { path: "contact", element: <Contact /> },
 { path: "mentions-legales", element: <Legal /> },
+{ path: "admin-login", element: <AdminLogin /> },
+{ path: "admin", element: <Admin /> },
 ],
 },
 ]);

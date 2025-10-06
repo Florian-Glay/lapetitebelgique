@@ -1,70 +1,52 @@
-import { useMemo, useRef, useEffect, useState } from "react";
-import { menu } from "../data/menu.js";
-import DishCard from "../components/DishCard.jsx";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
+import DishCard from "../components/DishCard";
 
 export default function Menu() {
-  const categories = useMemo(() => menu.map(c => c.slug), []);
-  const [active, setActive] = useState(categories[0]);
-  const tabRefs = useRef({});              // refs par slug
-  const barRef  = useRef(null);            // ref du bandeau
+  const [cats, setCats] = useState([]);
+  const [dishes, setDishes] = useState([]);
+  const [active, setActive] = useState(null);
 
-  // Scroll automatique vers l’onglet actif
   useEffect(() => {
-    const el = tabRefs.current[active];
-    if (el && barRef.current) {
-      const { left: bl, width: bw } = barRef.current.getBoundingClientRect();
-      const { left: tl, width: tw } = el.getBoundingClientRect();
-      const delta = tl - bl - (bw/2 - tw/2);
-      barRef.current.scrollBy({ left: delta, behavior: "smooth" });
-    }
-  }, [active]);
+    (async () => {
+      const { data: c } = await supabase.from("categories").select("*").order("sort");
+      setCats(c || []);
+      setActive(c?.[0]?.slug ?? null);
 
-  // Navigation clavier: ← →
-  const onKeyDown = (e, idx) => {
-    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-    e.preventDefault();
-    const dir = e.key === "ArrowRight" ? 1 : -1;
-    const next = (idx + dir + categories.length) % categories.length;
-    const slug = categories[next];
-    setActive(slug);
-    tabRefs.current[slug]?.focus();
-  };
+      const { data: d } = await supabase
+        .from("dishes")
+        .select("*")
+        .order("sort");
+      setDishes(d || []);
+    })();
+  }, []);
 
-  // --- rendu ---
+  const list = useMemo(() => {
+    const cat = cats.find(x => x.slug === active);
+    if (!cat) return [];
+    return dishes.filter(d => d.category_id === cat.id && d.active);
+  }, [cats, dishes, active]);
+
+  // … ton bandeau d’onglets (active/setActive) reste identique …
   return (
     <section className="container py-10">
       <h1 className="section-title">La Carte</h1>
-      <p className="mt-2 opacity-80">
-        Parcourez les catégories et préparez votre commande avant de venir
-      </p>
 
-      {/* BANDEAU D’ONGLETS */}
-      <div
-        ref={barRef}
-        className="menu-tabs"
-        role="tablist"
-        aria-label="Catégories du menu"
-      >
-        {menu.map((cat, i) => (
+      {/* Bandeau d’onglets */}
+      <div className="menu-tabs" role="tablist">
+        {cats.map((cat, i) => (
           <button
-            key={cat.slug}
-            ref={el => (tabRefs.current[cat.slug] = el)}
-            onClick={() => setActive(cat.slug)}
-            onKeyDown={(e) => onKeyDown(e, i)}
-            role="tab"
-            aria-selected={active === cat.slug}
+            key={cat.id}
             className={`menu-tab ${active === cat.slug ? "is-active" : ""}`}
+            onClick={() => setActive(cat.slug)}
           >
             {cat.title}
           </button>
         ))}
       </div>
 
-      {/* LISTE DES PLATS */}
       <div className="mt-8 grid md:grid-cols-2 gap-4">
-        {menu.find(c => c.slug === active)?.items.map(it => (
-          <DishCard key={it.title} item={it} />
-        ))}
+        {list.map((it) => <DishCard key={it.id} item={it} />)}
       </div>
     </section>
   );
