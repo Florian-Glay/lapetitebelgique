@@ -75,33 +75,84 @@ body {
   .container { padding-inline: 2.5rem; }
 }
 
-/* Barre des catégories — à appliquer sur le conteneur des boutons */
-.menu-cats {
+/* ==========================
+   Bandeau d'onglets (catégories)
+   ========================== */
+.menu-tabs {
+  position: sticky;           /* enlève si tu ne veux pas qu'il reste visible */
+  top: 0;                     /* ajuste si la navbar est fixe (ex: 56px) */
+  z-index: 40;
+  background: var(--color-cream);
+  padding-inline: clamp(1rem, 4vw, 2rem);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   display: flex;
-  gap: .75rem;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-top: 1rem;
+  gap: clamp(1rem, 3vw, 2rem);
+
+  /* Lignes haute/basse du bandeau */
+  position: sticky;
+}
+.menu-tabs::before,
+.menu-tabs::after {
+  content: "";
+  position: sticky;
+  left: 0; right: 0;
+  display: block;
+  height: 2px;
+  background: color-mix(in oklab, var(--color-burgundy), transparent 80%);
+  pointer-events: none;
+}
+.menu-tabs::before { top: 0; }
+.menu-tabs::after  { bottom: 0; }
+
+/* Effet fondu aux extrémités en scroll */
+.menu-tabs {
+  --fade: 24px;
+  -webkit-mask-image: linear-gradient(to right,
+      transparent, black var(--fade),
+      black calc(100% - var(--fade)), transparent);
+          mask-image: linear-gradient(to right,
+      transparent, black var(--fade),
+      black calc(100% - var(--fade)), transparent);
 }
 
-/* Style par défaut des onglets (plus grands) */
-.menu-cats .badge {
-  height: 44px;                 /* confortable au doigt */
-  padding: 0 .95rem;            /* > taille */
-  font-size: 1rem;              /* lisible */
-  font-weight: 600;
-  border-width: 2px;
-  border-color: color-mix(in oklab, var(--color-burgundy), transparent 45%);
-  background: white;
-  box-shadow: var(--shadow-card);
-  transition: transform .06s ease, background-color .15s ease;
+/* Onglets */
+.menu-tab {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: .85rem 0;                 /* hauteur confortable */
+  font-weight: 700;
+  font-size: clamp(1rem, .9rem + .3vw, 1.125rem);
+  color: color-mix(in oklab, var(--color-burgundy), black 25%);
+  white-space: nowrap;
+  position: relative;
+  transition: color .2s ease;
 }
-.menu-cats .badge:active { transform: scale(.98); }
+.menu-tab:hover { color: var(--color-burgundy); }
 
-/* État actif (onglet sélectionné) */
-.menu-cats .badge.is-active {
-  background: var(--color-burgundy);
-  color: var(--color-cream);
-  border-color: var(--color-burgundy);
+/* Soulignement animé de l'onglet actif */
+.menu-tab::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -2px;
+  height: 3px;
+  border-radius: 9999px;
+  background: transparent;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .2s ease, background-color .2s ease;
+}
+.menu-tab.is-active {
+  color: var(--color-burgundy);
+}
+.menu-tab.is-active::after {
+  background: var(--color-burgundy); /* tu peux mettre var(--color-gold) si tu préfères */
+  transform: scaleX(1);
 }
 
+/* Accessibilité focus clavier */
+.menu-tab:focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--color-burgundy), white 40%);
+  outline-offset: 2px;
+}
